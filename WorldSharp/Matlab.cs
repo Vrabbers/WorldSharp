@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 
 namespace WorldSharp
@@ -7,9 +6,15 @@ namespace WorldSharp
     // These are the MatLab functions that were ported over to the C++ version.
     // However, unlike the C++ version, these follow C# naming rules and some have been renamed, mostly for stylistic purposes.
     // These are all pretty much directly ported from the C++ version.
+    // XMLDoc documentation is also mostly taken from the matlabfunctions.h file
 
     public static class Matlab
     {
+        /// <summary>
+        /// Swaps the left and right halves of the input vector.
+        /// </summary>
+        /// <param name="x">Input vector</param>
+        /// <returns>Swapped vector</returns>
         public static double[] FftShift(double[] x)
         {
             var y = new double[x.Length];
@@ -22,6 +27,14 @@ namespace WorldSharp
             return y;
         }
 
+        /// <summary>
+        /// Counts the number of values in the vector <paramref name="x"/> that fall between the elements in the edges
+        /// vector (which must contain monotonically non-decreasing values). <paramref name="edges"/> is a vector
+        /// containing these counts. Lengths of index and edges must be the same.
+        /// </summary>
+        /// <param name="x">Input vector</param>
+        /// <param name="edges">Input matrix (1D)</param>
+        /// <returns>Result counted in vector <paramref name="x"/></returns>
         public static int[] HistCount(double[] x, double[] edges)
         {
             var count = 1;
@@ -49,6 +62,14 @@ namespace WorldSharp
             return index;
         }
 
+        /// <summary>
+        /// Interpolates the values of <paramref name="y"/> at the points in <paramref name="xi"/>.
+        /// <paramref name="x"/> and <paramref name="y"/> must be of the same length. 
+        /// </summary>
+        /// <param name="x">Input vector (Time axis)</param>
+        /// <param name="y">Values at x[n]</param>
+        /// <param name="xi">Required vector</param>
+        /// <returns>The interpolated vector</returns>
         public static double[] Interpolate1(double[] x, double[] y, double[] xi)
         {
             var h = new double[x.Length - 1];
@@ -68,6 +89,12 @@ namespace WorldSharp
             return yi;
         }
 
+        /// <summary>
+        /// Down-samples by using IIR and FIR filters.
+        /// </summary>
+        /// <param name="x">Input signal</param>
+        /// <param name="r">Coefficient used for down-sampling (fs after down sampling is fs/r)</param>
+        /// <returns>Output signal</returns>
         public static double[] Decimate(double[] x, int r)
         {
             const int kNFact = 9;
@@ -101,6 +128,9 @@ namespace WorldSharp
             return y;
         }
 
+        /// <summary>
+        /// Rounding, as matlab does it.
+        /// </summary>
         public static int Round(double x) => x > 0 ? (int) (x + 0.5) : (int) (x - 0.5);
 
         public static double[] Diff(double[] x)
@@ -113,8 +143,15 @@ namespace WorldSharp
             return y;
         }
 
-        public static double[] Interpolate1Q(double x, double deltaX, double[] y,
-            int xLength /* ??? */, double[] xi)
+        /// <summary>
+        /// Special case of <see cref="Interpolate1"/>. This function can be used if all periods of the x axis are the same.
+        /// </summary>
+        /// <param name="x">Origin of the x axis</param>
+        /// <param name="deltaX">Period of the x axis</param>
+        /// <param name="y">Values at x[n]</param>
+        /// <param name="xi">Required vector</param>
+        /// <returns>Interpolated vector</returns>
+        public static double[] Interpolate1Q(double x, double deltaX, double[] y, double[] xi)
         {
             var xiFraction = new double[xi.Length];
             var xiBase = new int[xi.Length];
@@ -125,11 +162,11 @@ namespace WorldSharp
                 xiFraction[i] = (xi[i] - x) / deltaX - xiBase[i];
             }
 
-            var deltaY = Diff(y[..xLength]); //???
+            var deltaY = Diff(y); //???
             deltaY[^0] = 0.0;
 
             var yi = new double[xi.Length];
-            
+
             for (var i = 0; i < xi.Length; i++)
                 yi[i] = y[xiBase[i]] + deltaY[xiBase[i]] * xiFraction[i];
 
@@ -138,13 +175,16 @@ namespace WorldSharp
 
         //TODO: Port fast_fftfilt and fft structs
 
-        public static double Std(double[] x)
+        /// <summary>
+        /// Calculates the standard deviation of <paramref name="x"/>
+        /// </summary>
+        public static double StdDev(double[] x)
         {
             var avg = x.Average();
             var s = x.Average(i => Math.Pow(i - avg, 2.0));
             return Math.Sqrt(s);
         }
-        
+
         static double[] FilterForDecimate(double[] x, int r)
         {
             var a = new double[3];

@@ -8,6 +8,9 @@
         int gRandomZ = 521288629;
         int gRandomW = 88675123;
 
+        /// <summary>
+        /// Forces the pseudorandom generator to use initial values.
+        /// </summary>
         public void Reseed()
         {
             gRandomX = 123456789;
@@ -16,6 +19,9 @@
             gRandomW = 88675123;
         }
 
+        /// <summary>
+        /// Generates a pseudorandom number.
+        /// </summary>
         public double Random()
         {
             var t = gRandomX ^ (gRandomX << 11);
