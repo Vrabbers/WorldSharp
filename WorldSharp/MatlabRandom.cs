@@ -31,7 +31,8 @@
             gRandomW = gRandomW ^ (gRandomW >> 19) ^ (t ^ (t >> 8));
 
             var tmp = gRandomW >> 4;
-            for (var i = 0; i < 11; ++i) {
+            for (var i = 0; i < 11; ++i)
+            {
                 t = gRandomX ^ (gRandomX << 11);
                 gRandomX = gRandomY;
                 gRandomY = gRandomZ;
@@ -39,6 +40,7 @@
                 gRandomW = gRandomW ^ (gRandomW >> 19) ^ (t ^ (t >> 8));
                 tmp += gRandomW >> 4;
             }
+
             return tmp / 268435456.0 - 6.0;
         }
     }
