@@ -174,7 +174,6 @@ namespace WorldSharp
         }
 
         //TODO: Port fast_fftfilt and fft structs
-
         /// <summary>
         /// Calculates the standard deviation of <paramref name="x"/>
         /// </summary>
